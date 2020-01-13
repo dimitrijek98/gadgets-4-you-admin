@@ -6,29 +6,31 @@ class LoginPage extends Component {
         super(props);
         this.AuthService = new AuthService();
         this.state = {
-            email: 'admin@admin.com',
-            password: 'admin',
+            email: '',
+            password: '',
+            userType: 'admin'
         }
     }
 
     login = (e) => {
         e.preventDefault();
-        this.AuthService.Login(this.state.email, this.state.password)
-        .then(response => {
-            if(response.status === 200){
-                 localStorage.setItem('admin', JSON.stringify(response.data));
-                this.props.history.push('/dashboard');
-            }
-         })
-         .catch(err => {
-             console.log(err.body, err.data, err);
-            if(err.status === 404){
-                alert(err.data);
-            }
-            if(err.status === 422){
-                alert(err.data);
-            }
-         });
+        const codedPass = btoa(this.state.password);
+        this.AuthService.Login(this.state.email, codedPass, this.state.userType)
+            .then(response => {
+                if (response.status === 200) {
+                    localStorage.setItem('user', JSON.stringify({...response.data, type: this.state.userType}));
+                    this.props.history.push('/dashboard');
+                }
+            })
+            .catch(err => {
+                console.log(err.body, err.data, err);
+                if (err.status === 404) {
+                    alert(err.data);
+                }
+                if (err.status === 422) {
+                    alert(err.data);
+                }
+            });
     };
 
     handleInput = (e) => {
@@ -42,6 +44,7 @@ class LoginPage extends Component {
                     <div className='col-lg-6'>
                         <div className='login-form-container'>
                             <form className='form-size'>
+
                                 <div className="form-group pb-3">
                                     <label htmlFor="exampleInputEmail1">Email address</label>
                                     <input type="email" className="form-control mt-2" name='email'
@@ -53,8 +56,32 @@ class LoginPage extends Component {
                                     <input type="password" name='password' onChange={this.handleInput}
                                            className="form-control mt-2"/>
                                 </div>
-
-                                <button onClick={this.login} 
+                                <div style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'space-around',
+                                    paddingBottom: '20px'
+                                }}>
+                                    <div className="form-check-inline">
+                                        <input className="form-check-input" type="radio" name="userType"
+                                               id="exampleRadios1" value="admin" onClick={this.handleInput}
+                                               checked={this.state.userType === 'admin'}/>
+                                        <label className="form-check-label" style={{fontSize: 25}}
+                                               htmlFor="exampleRadios1">
+                                            Admin
+                                        </label>
+                                    </div>
+                                    <div className="form-check-inline">
+                                        <input className="form-check-input" type="radio" name="userType"
+                                               id="exampleRadios2" value="seller" onClick={this.handleInput}
+                                               checked={this.state.userType === 'seller'}/>
+                                        <label className="form-check-label" style={{fontSize: 25}}
+                                               htmlFor="exampleRadios2">
+                                            Seller
+                                        </label>
+                                    </div>
+                                </div>
+                                <button onClick={this.login}
                                         type="submit" className="btn btn-light">Log in
                                 </button>
                             </form>
