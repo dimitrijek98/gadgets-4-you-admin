@@ -29,7 +29,7 @@ class Forms extends Component {
                 brand: '',
                 model: '',
                 charging: '',
-                audio: '',
+                audio: 'def',
                 bluetooth: true
             }
         }
@@ -129,7 +129,7 @@ class Forms extends Component {
         const {phone} = this.state;
         this.PhoneService.addPhone(phone)
             .then(res => {
-                this.setState({phones: [...this.state.phones, res.data]})
+                this.setState({phone:{...this.state.phone, brand:'', model:'', charging:'', audio: 'def'},phones: [...this.state.phones, res.data]})
             })
     };
 
@@ -140,7 +140,14 @@ class Forms extends Component {
         data.append('file', this.state.image);
         this.ProductService.addProduct(product)
             .then(res => {
-                this.setState({products: [...this.state.products, res.data]});
+                const emptyProduct ={
+                    seller: '',
+                    name: '',
+                    price: '',
+                    connector: '',
+                    image: '',
+                };
+                this.setState({product:emptyProduct, products: [...this.state.products, res.data]});
                 this.ProductService.uploadProductImage(data)
                     .then(res => {
                         console.log(res);
@@ -167,28 +174,28 @@ class Forms extends Component {
                             <form>
                                 <div className="form-group ">
                                     <label htmlFor="inputEmail4">Brand</label>
-                                    <input type="text" onChange={this.onChange} name={'brand'} className="form-control"
+                                    <input type="text" onChange={this.onChange} value={this.state.phone.brand} name={'brand'} className="form-control"
                                            id="inputEmail4"/>
                                 </div>
                                 <div className="form-group ">
                                     <label htmlFor="inputPassword4">Model name</label>
-                                    <input type="text" onChange={this.onChange} name={'model'} className="form-control"
+                                    <input type="text" onChange={this.onChange} value={this.state.phone.model}  name={'model'} className="form-control"
                                            id="inputPassword4"/>
                                 </div>
                                 <div className="form-row">
                                     <div className="form-group col-md-4">
                                         <label htmlFor="inputCity">Charging</label>
-                                        <select id="inputState" onChange={this.onChange} name={'charging'}
+                                        <select id="inputState" onChange={this.onChange} value={this.state.phone.charging}  name={'charging'}
                                                 className="form-control">
-                                            <option selected>Choose...</option>
-                                            {this.state.charging.map(port => <option>{port.type}</option>)}
+                                            <option value={''} selected>Choose...</option>
+                                            {this.state.charging.map(port => <option value={port.type}>{port.type}</option>)}
                                         </select>
                                     </div>
                                     <div className="form-group col-md-4">
                                         <label htmlFor="inputState">Audio</label>
-                                        <select id="inputState" onChange={this.onChange} name={'audio'}
+                                        <select id="inputState" onChange={this.onChange} value={this.state.phone.audio}  name={'audio'}
                                                 className="form-control">
-                                            <option selected>Choose...</option>
+                                            <option value={'def'} selected>Choose...</option>
                                             <option value={''}>None</option>
                                             {this.state.audio.map(port => <option
                                                 value={port.type}>{port.type}</option>)}
@@ -196,7 +203,7 @@ class Forms extends Component {
                                     </div>
                                     <div className="form-group col-md-4">
                                         <label htmlFor="inputZip">Bluetooth</label>
-                                        <select id="inputState" onChange={this.onChange} name={'bluetooth'}
+                                        <select id="inputState" onChange={this.onChange} value={this.state.phone.bluetooth}  name={'bluetooth'}
                                                 className="form-control">
                                             <option value={true} selected>Yes</option>
                                             <option value={false}>No</option>
@@ -260,19 +267,19 @@ class Forms extends Component {
                             <form>
                                 <div className="form-group ">
                                     <label htmlFor="inputEmail4">Name</label>
-                                    <input type="text" onChange={this.onProductChange} name={'name'}
+                                    <input type="text" onChange={this.onProductChange} value={this.state.product.name} name={'name'}
                                            className="form-control"
                                            id="inputEmail4"/>
                                 </div>
                                 <div className="form-group ">
                                     <label htmlFor="inputPassword4">Price</label>
-                                    <input type="text" onChange={this.onProductChange} name={'price'}
+                                    <input type="text" onChange={this.onProductChange} value={this.state.product.price} name={'price'}
                                            className="form-control"
                                            id="inputPassword4"/>
                                 </div>
                                 <div className="form-group ">
-                                    <select onChange={this.onProductChange} className="form-control" name={'connector'}>
-                                        <option>Select connector...</option>
+                                    <select onChange={this.onProductChange} className="form-control" value={this.state.product.connector}  name={'connector'}>
+                                        <option value={''}>Select connector...</option>
                                         {this.state.allPorts.map(port => <option
                                             value={port.type}>{port.type}</option>)}
                                     </select>
